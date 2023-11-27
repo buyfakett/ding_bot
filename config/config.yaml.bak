@@ -1,0 +1,10 @@
+client_id:
+client_secret:
+project:
+  -
+    id: 1
+    name: test1
+    url: https://
+  - id: 2
+    name: test2
+    url: https://
