@@ -23,6 +23,7 @@ def develop_project(expression, param_flag):
     response = ''
     flag = 0
     if param_flag:
+        response = '上线项目：'
         for project in projects:
             response += '\n' + '上线 ' + project['name'] + ' 请回复：' + str(project['id'])
     else:
@@ -62,10 +63,13 @@ class CalcBotHandler(dingtalk_stream.ChatbotHandler):
             if len(parts) > 2:
                 response = '参数数量错误'
             else:
+                param_flag = False
                 choose_ability = parts[0]
-                choose_project = parts[1]
                 if len(parts) == 1:
                     param_flag = True
+                    choose_project = ''
+                else:
+                    choose_project = parts[1]
                 if choose_ability == '1':
                     response = develop_project(choose_project, param_flag)
                 elif choose_ability == '2':
