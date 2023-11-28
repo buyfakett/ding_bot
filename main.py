@@ -25,7 +25,7 @@ def develop_project(expression, param_flag):
     if param_flag:
         response += '上线项目：'
         for project in projects:
-            response += '\n' + '上线 ' + project['name'] + ' 请回复：' + str(project['id'])
+            response += '\n' + '上线 ' + project['name'] + ' 请回复：@jenkins服务一键上线 1 ' + str(project['id'])
     else:
         for project in projects:
             if expression == str(project['id']):
@@ -50,7 +50,7 @@ def develop_nginx(expression, param_flag):
     if param_flag:
         response += '更新nginx配置：'
         for nginx in nginxs:
-            response += '\n' + '更新 ' + nginx['server-name'] + ' 请回复：' + str(nginx['id'])
+            response += '\n' + '更新 ' + nginx['server-name'] + ' 请回复：@jenkins服务一键上线 2 ' + str(nginx['id'])
     else:
         for nginx in nginxs:
             if expression == str(nginx['id']):
