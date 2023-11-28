@@ -8,3 +8,11 @@ project:
   - id: 2
     name: test2
     url: https://
+nginx-url: https://
+nginx:
+  -
+    id: 1
+    server-name: xxx
+  -
+    id: 2
+    server-name: xxx
