@@ -23,7 +23,7 @@ def develop_project(expression, param_flag):
     response = ''
     flag = 0
     if param_flag:
-        response = '上线项目：'
+        response += '上线项目：'
         for project in projects:
             response += '\n' + '上线 ' + project['name'] + ' 请回复：' + str(project['id'])
     else:
@@ -39,6 +39,34 @@ def develop_project(expression, param_flag):
                 flag += 1
             if flag == project['id']:
                 response = '没有该项目'
+    return response
+
+
+def develop_nginx(expression, param_flag):
+    nginxs = read_yaml('nginx', 'config.yaml')
+    nginx_url = read_yaml('nginx-url', 'config.yaml')
+    response = ''
+    flag = 0
+    if param_flag:
+        response += '更新nginx配置：'
+        for nginx in nginxs:
+            response += '\n' + '更新 ' + nginx['server-name'] + ' 请回复：' + str(nginx['id'])
+    else:
+        for nginx in nginxs:
+            if expression == str(nginx['id']):
+                try:
+                    data = {
+                        'ServerNameList': nginx['server-name']
+                    }
+                    requests.get(str(nginx_url), json=data, verify=False)
+                except:
+                    response = '调用上线接口成功'
+                else:
+                    response = '调用更新nginx配置接口成功， ' + str(nginx['server-name']) + ' 正在更新！'
+            else:
+                flag += 1
+            if flag == nginx['id']:
+                response = '没有该服务器'
     return response
 
 
@@ -73,7 +101,7 @@ class CalcBotHandler(dingtalk_stream.ChatbotHandler):
                 if choose_ability == '1':
                     response = develop_project(choose_project, param_flag)
                 elif choose_ability == '2':
-                    pass
+                    response = develop_nginx(choose_project, param_flag)
                 else:
                     response = '参数错误'
 
