@@ -6,6 +6,7 @@ from dingtalk_stream import AckMessage
 import dingtalk_stream
 from util.yaml_util import read_yaml
 import requests
+from sqlalchemy import create_engine
 
 
 def setup_logger():
@@ -113,12 +114,19 @@ class CalcBotHandler(dingtalk_stream.ChatbotHandler):
 def main():
     logger = setup_logger()
 
-    credential = dingtalk_stream.Credential(read_yaml('client_id', 'config.yaml'),
-                                            read_yaml('client_secret', 'config.yaml'))
+    credential = dingtalk_stream.Credential(read_yaml('client_id', 'config'),
+                                            read_yaml('client_secret', 'config'))
     client = dingtalk_stream.DingTalkStreamClient(credential)
     client.register_callback_handler(dingtalk_stream.chatbot.ChatbotMessage.TOPIC, CalcBotHandler(logger))
     client.start_forever()
 
 
 if __name__ == '__main__':
+    db_user = read_yaml('user', 'db')
+    db_password = read_yaml('password', 'db')
+    db_ip = read_yaml('ip', 'db')
+    db_port = read_yaml('port', 'db')
+    db_database = read_yaml('database', 'db')
+    DATABASE_URL = f"postgresql+psycopg2://{db_user}:{db_password}@{db_ip}:{db_port}/{db_database}"
+    engine = create_engine(DATABASE_URL)
     main()

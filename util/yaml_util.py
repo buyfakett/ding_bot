@@ -9,7 +9,7 @@ def read_yaml(key: str, filename: str):
     :return         *           要读取的值
     """
     try:
-        with open(os.getcwd() + '/config/' + filename, encoding="utf-8") as f:
+        with open(os.getcwd() + '/config/' + filename + '.yaml', encoding="utf-8") as f:
             value = yaml.load(stream=f, Loader=yaml.FullLoader)
             return value[key]
     except:
