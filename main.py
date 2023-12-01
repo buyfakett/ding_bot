@@ -24,38 +24,38 @@ def setup_logger():
 
 
 def develop_nginx(expression, param_flag):
-    nginxs = read_yaml('nginx', 'config')
+    # nginxs = read_yaml('nginx', 'config')
     nginx_url = read_yaml('nginx-url', 'config')
     response = ''
     flag = 0
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     session = SessionLocal()
+    nginxs = session.query(Nginx).all()
     session.close()
     if param_flag:
         response += '更新nginx配置：'
         for nginx in nginxs:
-            response += '\n' + '更新 ' + nginx['server-name'] + ' 请回复：@jenkins服务一键上线 2 ' + str(nginx['id'])
+            response += '\n' + '更新 ' + nginx.server_name + ' 请回复：@jenkins服务一键上线 2 ' + str(nginx.id)
     else:
         for nginx in nginxs:
             if expression == str(nginx['id']):
                 try:
                     data = {
-                        'ServerNameList': nginx['server-name']
+                        'ServerNameList': nginx.server_name
                     }
                     requests.get(str(nginx_url), json=data, verify=False)
                 except:
                     response = '调用上线接口成功'
                 else:
-                    response = '调用更新nginx配置接口成功， ' + str(nginx['server-name']) + ' 正在更新！'
+                    response = '调用更新nginx配置接口成功， ' + str(nginx.server_name) + ' 正在更新！'
             else:
                 flag += 1
-            if flag == nginx['id']:
+            if flag == nginx.id:
                 response = '没有该服务器'
     return response
 
 
 def develop_project(expression, param_flag):
-    # projects = read_yaml('project', 'config')
     response = ''
     flag = 0
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -155,10 +155,4 @@ if __name__ == '__main__':
     engine = create_engine(DATABASE_URL)
     # 创建表
     Base.metadata.create_all(bind=engine)
-    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    session = SessionLocal()
-    users = session.query(Project).all()
-    for user in users:
-        print(f'User: {user.name}, Age: {user.url}')
-    session.close()
-    # main()
+    main()
