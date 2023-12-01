@@ -28,6 +28,9 @@ def develop_nginx(expression, param_flag):
     nginx_url = read_yaml('nginx-url', 'config')
     response = ''
     flag = 0
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    session = SessionLocal()
+    session.close()
     if param_flag:
         response += '更新nginx配置：'
         for nginx in nginxs:
@@ -55,6 +58,9 @@ def develop_project(expression, param_flag):
     projects = read_yaml('project', 'config')
     response = ''
     flag = 0
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    session = SessionLocal()
+    session.close()
     if param_flag:
         response += '上线项目：'
         for project in projects:
@@ -138,7 +144,7 @@ class Nginx(Base):
     server_name = Column(String(255), nullable=False)
 
 
-if __name__ == '__main__':
+def connect_db():
     db_user = read_yaml('user', 'db')
     db_password = read_yaml('password', 'db')
     db_host = read_yaml('host', 'db')
@@ -148,7 +154,8 @@ if __name__ == '__main__':
     engine = create_engine(DATABASE_URL)
     # 创建表
     Base.metadata.create_all(bind=engine)
-    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    session = SessionLocal()
-    session.close()
+
+
+if __name__ == '__main__':
+    connect_db()
     main()
