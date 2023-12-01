@@ -1,6 +1,6 @@
 # !/usr/bin/env python
 
-import argparse
+
 import logging
 from dingtalk_stream import AckMessage
 import dingtalk_stream
@@ -144,7 +144,7 @@ class Nginx(Base):
     server_name = Column(String(255), nullable=False)
 
 
-def connect_db():
+if __name__ == '__main__':
     db_user = read_yaml('user', 'db')
     db_password = read_yaml('password', 'db')
     db_host = read_yaml('host', 'db')
@@ -154,8 +154,4 @@ def connect_db():
     engine = create_engine(DATABASE_URL)
     # 创建表
     Base.metadata.create_all(bind=engine)
-
-
-if __name__ == '__main__':
-    connect_db()
     main()
