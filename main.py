@@ -7,6 +7,8 @@ import dingtalk_stream
 from util.yaml_util import read_yaml
 import requests
 from sqlalchemy import create_engine
+from develop.project import develop_project
+from develop.nginx import develop_nginx
 
 
 def setup_logger():
@@ -17,58 +19,6 @@ def setup_logger():
     logger.addHandler(handler)
     logger.setLevel(logging.INFO)
     return logger
-
-
-def develop_project(expression, param_flag):
-    projects = read_yaml('project', 'config.yaml')
-    response = ''
-    flag = 0
-    if param_flag:
-        response += '上线项目：'
-        for project in projects:
-            response += '\n' + '上线 ' + project['name'] + ' 请回复：@jenkins服务一键上线 1 ' + str(project['id'])
-    else:
-        for project in projects:
-            if expression == str(project['id']):
-                try:
-                    requests.get(str(project['url']), verify=False)
-                except:
-                    response = '调用上线接口成功'
-                else:
-                    response = '调用上线接口成功， ' + str(project['name']) + ' 正在上线！'
-            else:
-                flag += 1
-            if flag == project['id']:
-                response = '没有该项目'
-    return response
-
-
-def develop_nginx(expression, param_flag):
-    nginxs = read_yaml('nginx', 'config.yaml')
-    nginx_url = read_yaml('nginx-url', 'config.yaml')
-    response = ''
-    flag = 0
-    if param_flag:
-        response += '更新nginx配置：'
-        for nginx in nginxs:
-            response += '\n' + '更新 ' + nginx['server-name'] + ' 请回复：@jenkins服务一键上线 2 ' + str(nginx['id'])
-    else:
-        for nginx in nginxs:
-            if expression == str(nginx['id']):
-                try:
-                    data = {
-                        'ServerNameList': nginx['server-name']
-                    }
-                    requests.get(str(nginx_url), json=data, verify=False)
-                except:
-                    response = '调用上线接口成功'
-                else:
-                    response = '调用更新nginx配置接口成功， ' + str(nginx['server-name']) + ' 正在更新！'
-            else:
-                flag += 1
-            if flag == nginx['id']:
-                response = '没有该服务器'
-    return response
 
 
 class CalcBotHandler(dingtalk_stream.ChatbotHandler):
@@ -124,9 +74,9 @@ def main():
 if __name__ == '__main__':
     db_user = read_yaml('user', 'db')
     db_password = read_yaml('password', 'db')
-    db_ip = read_yaml('ip', 'db')
+    db_host = read_yaml('host', 'db')
     db_port = read_yaml('port', 'db')
     db_database = read_yaml('database', 'db')
-    DATABASE_URL = f"postgresql+psycopg2://{db_user}:{db_password}@{db_ip}:{db_port}/{db_database}"
+    DATABASE_URL = f"postgresql+psycopg2://{db_user}:{db_password}@{db_host}:{db_port}/{db_database}"
     engine = create_engine(DATABASE_URL)
     main()
