@@ -24,13 +24,12 @@ def setup_logger():
 
 
 def develop_nginx(expression, param_flag):
-    # nginxs = read_yaml('nginx', 'config')
-    nginx_url = read_yaml('nginx-url', 'config')
     response = ''
     flag = 0
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     session = SessionLocal()
     nginxs = session.query(Nginx).all()
+    nginx_url = session.query(NginxUrl).all()
     session.close()
     if param_flag:
         response += '更新nginx配置：'
@@ -43,7 +42,7 @@ def develop_nginx(expression, param_flag):
                     data = {
                         'ServerNameList': nginx.server_name
                     }
-                    requests.get(str(nginx_url), json=data, verify=False)
+                    requests.get(str(nginx_url[0].url), json=data, verify=False)
                 except:
                     response = '调用上线接口成功'
                 else:
@@ -125,8 +124,11 @@ class CalcBotHandler(dingtalk_stream.ChatbotHandler):
 def main():
     logger = setup_logger()
 
-    credential = dingtalk_stream.Credential(read_yaml('client_id', 'config'),
-                                            read_yaml('client_secret', 'config'))
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    session = SessionLocal()
+    bot = session.query(Bot).all()
+    session.close()
+    credential = dingtalk_stream.Credential(bot[0].client_id, bot[0].client_secret)
     client = dingtalk_stream.DingTalkStreamClient(credential)
     client.register_callback_handler(dingtalk_stream.chatbot.ChatbotMessage.TOPIC, CalcBotHandler(logger))
     client.start_forever()
@@ -147,11 +149,13 @@ class Nginx(Base):
 
 class NginxUrl(Base):
     __tablename__ = 'nginx_url'
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     url = Column(String(255), nullable=False)
 
 
 class Bot(Base):
     __tablename__ = 'bot'
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     client_id = Column(String(255), nullable=False)
     client_secret = Column(String(255), nullable=False)
 
