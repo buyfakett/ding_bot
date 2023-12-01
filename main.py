@@ -145,6 +145,17 @@ class Nginx(Base):
     server_name = Column(String(255), nullable=False)
 
 
+class NginxUrl(Base):
+    __tablename__ = 'nginx_url'
+    url = Column(String(255), nullable=False)
+
+
+class Bot(Base):
+    __tablename__ = 'bot'
+    client_id = Column(String(255), nullable=False)
+    client_secret = Column(String(255), nullable=False)
+
+
 if __name__ == '__main__':
     db_user = read_yaml('user', 'db')
     db_password = read_yaml('password', 'db')
