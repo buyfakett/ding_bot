@@ -55,28 +55,29 @@ def develop_nginx(expression, param_flag):
 
 
 def develop_project(expression, param_flag):
-    projects = read_yaml('project', 'config')
+    # projects = read_yaml('project', 'config')
     response = ''
     flag = 0
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     session = SessionLocal()
+    projects = session.query(Project).all()
     session.close()
     if param_flag:
         response += '上线项目：'
         for project in projects:
-            response += '\n' + '上线 ' + project['name'] + ' 请回复：@jenkins服务一键上线 1 ' + str(project['id'])
+            response += '\n' + '上线 ' + project.name + ' 请回复：@jenkins服务一键上线 1 ' + str(project.id)
     else:
         for project in projects:
-            if expression == str(project['id']):
+            if expression == str(project.id):
                 try:
-                    requests.get(str(project['url']), verify=False)
+                    requests.get(str(project.url), verify=False)
                 except:
                     response = '调用上线接口成功'
                 else:
-                    response = '调用上线接口成功， ' + str(project['name']) + ' 正在上线！'
+                    response = '调用上线接口成功， ' + str(project.name) + ' 正在上线！'
             else:
                 flag += 1
-            if flag == project['id']:
+            if flag == project.id:
                 response = '没有该项目'
     return response
 
@@ -133,14 +134,14 @@ def main():
 
 class Project(Base):
     __tablename__ = 'develop_project'
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     name = Column(String(255), nullable=False)
     url = Column(String(255), nullable=False)
 
 
 class Nginx(Base):
     __tablename__ = 'develop_nginx'
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     server_name = Column(String(255), nullable=False)
 
 
@@ -154,4 +155,10 @@ if __name__ == '__main__':
     engine = create_engine(DATABASE_URL)
     # 创建表
     Base.metadata.create_all(bind=engine)
-    main()
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    session = SessionLocal()
+    users = session.query(Project).all()
+    for user in users:
+        print(f'User: {user.name}, Age: {user.url}')
+    session.close()
+    # main()
