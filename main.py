@@ -37,7 +37,7 @@ def develop_nginx(expression, param_flag):
             response += '\n' + '更新 ' + nginx.server_name + ' 请回复：@jenkins服务一键上线 2 ' + str(nginx.id)
     else:
         for nginx in nginxs:
-            if expression == str(nginx['id']):
+            if expression == str(nginx.id):
                 try:
                     data = {
                         'ServerNameList': nginx.server_name
