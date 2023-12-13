@@ -1,4 +1,4 @@
-FROM python:3.12-alpine
+FROM python:3.12.1-alpine3.19
 ADD . /app
 WORKDIR /app
 RUN pip3 install --upgrade pip -i https://pypi.tuna.tsinghua.edu.cn/simple
