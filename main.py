@@ -4,10 +4,10 @@
 import logging
 from dingtalk_stream import AckMessage
 import dingtalk_stream
-from util.yaml_util import read_yaml
 import requests
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import declarative_base, sessionmaker
+from pyconfig_util.config_util import setting
 
 # 定义模型类
 Base = declarative_base()
@@ -29,7 +29,6 @@ def develop_nginx(expression, param_flag):
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     session = SessionLocal()
     nginxs = session.query(Nginx).all()
-    nginx_url = session.query(NginxUrl).all()
     session.close()
     if param_flag:
         response += '更新nginx配置：'
@@ -42,7 +41,7 @@ def develop_nginx(expression, param_flag):
                     data = {
                         'ServerNameList': nginx.server_name
                     }
-                    requests.get(str(nginx_url[0].url), json=data, verify=False)
+                    requests.get(str(setting.NGINX_WEBHOOK), json=data, verify=False)
                 except:
                     response = '调用上线接口成功'
                 else:
@@ -124,11 +123,7 @@ class CalcBotHandler(dingtalk_stream.ChatbotHandler):
 def main():
     logger = setup_logger()
 
-    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    session = SessionLocal()
-    bot = session.query(Bot).all()
-    session.close()
-    credential = dingtalk_stream.Credential(bot[0].client_id, bot[0].client_secret)
+    credential = dingtalk_stream.Credential(str(setting.DING_ID), str(setting.DING_SECRET))
     client = dingtalk_stream.DingTalkStreamClient(credential)
     client.register_callback_handler(dingtalk_stream.chatbot.ChatbotMessage.TOPIC, CalcBotHandler(logger))
     client.start_forever()
@@ -147,25 +142,12 @@ class Nginx(Base):
     server_name = Column(String(255), nullable=False)
 
 
-class NginxUrl(Base):
-    __tablename__ = 'nginx_url'
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    url = Column(String(255), nullable=False)
-
-
-class Bot(Base):
-    __tablename__ = 'bot'
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    client_id = Column(String(255), nullable=False)
-    client_secret = Column(String(255), nullable=False)
-
-
 if __name__ == '__main__':
-    db_user = read_yaml('user', 'db')
-    db_password = read_yaml('password', 'db')
-    db_host = read_yaml('host', 'db')
-    db_port = read_yaml('port', 'db')
-    db_database = read_yaml('database', 'db')
+    db_user = str(setting.DATABASE_USER)
+    db_password = str(setting.DATABASE_PASSWORD)
+    db_host = str(setting.DATABASE_HOST)
+    db_port = str(setting.DATABASE_PORT)
+    db_database = str(setting.DATABASE_DATABASE)
     DATABASE_URL = f"postgresql+psycopg2://{db_user}:{db_password}@{db_host}:{db_port}/{db_database}"
     engine = create_engine(DATABASE_URL)
     # 创建表

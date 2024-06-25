@@ -4,4 +4,4 @@
 /dist
 /dingtalk_stream.egg-info
 test.py
-config/*.yaml
+config/setting.yaml

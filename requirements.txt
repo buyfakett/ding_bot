@@ -3,9 +3,9 @@ charset-normalizer==3.3.2
 idna==3.4
 psycopg==3.1.12
 psycopg2-binary==2.9.9
-PyYAML==6.0.1
 requests==2.30.0
 SQLAlchemy==2.0.23
 typing_extensions==4.8.0
 urllib3==1.26.15
 websockets==11.0.2
+pyconfig_util==1.0.4
