@@ -10,7 +10,7 @@ services:
         networks:
           - ding_bot
         volumes:
-            - ./config/:/app/config/
+            - ./config/setting.yaml:/app/config/setting.yaml
         image: registry.cn-hangzhou.aliyuncs.com/buyfakett/ding_bot:pg_db
   db:
       image: postgres:14.2
