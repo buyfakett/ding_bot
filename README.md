@@ -2,6 +2,22 @@
 
 ## 快速开始
 
+配置文件示例
+
+```yaml
+database:
+  host: localhost
+  port: 5432
+  user: postgres
+  password: password
+  database: ding_bot
+ding:
+  id: xxx
+  secret: xxx
+nginx:
+  webhook: https://xxx.top/generic-webhook-trigger/invoke?token=xxx
+```
+
 1、创建企业内部应用
 
 进入[钉钉开发者后台](https://open-dev.dingtalk.com/)，创建企业内部应用，获取ClientID（即 AppKey）和ClientSecret（ 即AppSecret）。
