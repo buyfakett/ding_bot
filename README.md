@@ -38,4 +38,4 @@ nginx:
 
 3、把配置文件设置好
 
-4、配置文件版请运行`bash setup.sh`   postgres版请运行`docker-compose up -d`
+4、配置文件版请运行`bash setup.sh`

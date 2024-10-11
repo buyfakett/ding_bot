@@ -5,4 +5,4 @@ docker rm ${name}
 docker run -id \
 --name ${name} \
 -v ./config/:/app/config/ \
-registry.cn-hangzhou.aliyuncs.com/buyfakett/ding_bot:latest
+buyfakett/ding_bot:latest
