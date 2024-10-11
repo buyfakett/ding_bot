@@ -12,17 +12,6 @@ from pyconfig_util.config_util import setting
 # 定义模型类
 Base = declarative_base()
 
-
-def setup_logger():
-    logger = logging.getLogger()
-    handler = logging.StreamHandler()
-    handler.setFormatter(
-        logging.Formatter('%(asctime)s %(name)-8s %(levelname)-8s %(message)s [%(filename)s:%(lineno)d]'))
-    logger.addHandler(handler)
-    logger.setLevel(logging.INFO)
-    return logger
-
-
 def develop_nginx(expression, param_flag):
     response = ''
     flag = 0
@@ -89,6 +78,7 @@ class CalcBotHandler(dingtalk_stream.ChatbotHandler):
     async def process(self, callback: dingtalk_stream.CallbackMessage):
         incoming_message = dingtalk_stream.ChatbotMessage.from_dict(callback.data)
         expression = incoming_message.text.content.strip()
+        logging.info(f'\n接收到信息:\n{expression}')
         response = ''
         if expression == '':
             response += '请选择你要执行的操作(部分操作需提供参数)'
@@ -115,17 +105,16 @@ class CalcBotHandler(dingtalk_stream.ChatbotHandler):
                 else:
                     response = '参数错误'
 
+        logging.info(f'\n返回信息:\n{response}')
         self.reply_text(response, incoming_message)
 
         return AckMessage.STATUS_OK, 'OK'
 
 
 def main():
-    logger = setup_logger()
-
     credential = dingtalk_stream.Credential(str(setting.DING_ID), str(setting.DING_SECRET))
     client = dingtalk_stream.DingTalkStreamClient(credential)
-    client.register_callback_handler(dingtalk_stream.chatbot.ChatbotMessage.TOPIC, CalcBotHandler(logger))
+    client.register_callback_handler(dingtalk_stream.chatbot.ChatbotMessage.TOPIC, CalcBotHandler())
     client.start_forever()
 
 
